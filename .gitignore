@@ -1,0 +1,9 @@
+.idea/*
+logs/*
+*.log
+**/*.iml
+**/*.pyc
+*.pyc
+logs
+venv
+vevn/*

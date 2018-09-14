@@ -1,0 +1,12 @@
+log:
+  path: /var/log/virtual_trading
+  files:
+    -*.log:
+      patterns:
+        -*error*:
+          level: ERROR
+  slackChannels:
+    - rac-stockbook
+  emails:
+    - hung.vumanh2@vndirect.com.vn
+    - hai.phamthanh@vndirect.com.vn
