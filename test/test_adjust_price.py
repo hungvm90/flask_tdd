@@ -1,6 +1,6 @@
 import unittest
 import json
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 import app
 from app import create_app
 from app.finfo import AdjustInfo
@@ -134,3 +134,41 @@ class AdjustPriceServiceTest(unittest.TestCase):
         self.assertEqual(1, len(call_args_list))
         (args, kwargs) = call_args_list[0]
         self.assertEqual(ad_vnd, kwargs['adjust_price'])
+
+    @patch.object(app.stockbook.Api, 'adjust_price', autospec=True)
+    @patch.object(app.finfo.PriceAdjustSource, 'get_today_adjust', autospec=True)
+    @patch.object(app.log.AdjustLog, 'log', autospec=True)
+    @patch.object(app.log.AdjustLog, 'get_logs', autospec=True)
+    def test_trigger_when_source_adjust_exception_should_throw(self, get_logs_mock,
+                                                               log_mock,
+                                                               get_today_adjust_mock,
+                                                               adjust_price_mock):
+        adjusts = []
+        ad_acb = AdjustInfo("ACB", 0.98, "2018-09-14")
+        adjusts.append(ad_acb)
+        ad_vnd = AdjustInfo("VND", 0.88, "2018-09-14")
+        adjusts.append(ad_vnd)
+        get_today_adjust_mock.side_effect = RuntimeError('')
+        adjust_price_mock.return_value = True
+        get_logs_mock.return_value = []
+
+        self.assertRaises(RuntimeError, self.adjust_price_service.adjust_for_today)
+
+    @patch.object(app.stockbook.Api, 'adjust_price', autospec=True)
+    @patch.object(app.finfo.PriceAdjustSource, 'get_today_adjust', autospec=True)
+    @patch.object(app.log.AdjustLog, 'log', autospec=True)
+    @patch.object(app.log.AdjustLog, 'get_logs', autospec=True)
+    def test_trigger_when_adjust_price_exception_should_throw(self, get_logs_mock,
+                                                               log_mock,
+                                                               get_today_adjust_mock,
+                                                               adjust_price_mock):
+        adjusts = []
+        ad_acb = AdjustInfo("ACB", 0.98, "2018-09-14")
+        adjusts.append(ad_acb)
+        ad_vnd = AdjustInfo("VND", 0.88, "2018-09-14")
+        adjusts.append(ad_vnd)
+        get_today_adjust_mock.return_value = adjusts
+        adjust_price_mock.side_effect = RuntimeError('')
+        get_logs_mock.return_value = []
+
+        self.assertRaises(RuntimeError, self.adjust_price_service.adjust_for_today)
