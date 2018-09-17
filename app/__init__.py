@@ -5,9 +5,14 @@ import logging
 from logging import handlers
 from config import config
 from .util import make_log_dir
+from . import finfo
+from . import stockbook
+from . import log
+from .adjust_price import AdjustPriceService
 
 
 cors = CORS()
+adjust_price_service = AdjustPriceService()
 
 
 def init_logger(app, config_obj):
@@ -44,6 +49,10 @@ def create_app(config_name):
     config_obj.init_app(app)
     setup_default_app_error_handler(app)
     cors.init_app(app)
+
+    from .trigger import price_blueprint
+    app.register_blueprint(price_blueprint, url_prefix='/api/adjust')
+
     return app
 
 
@@ -76,10 +85,14 @@ def setup_default_app_error_handler(app):
     @app.errorhandler(Exception)
     def error_handle(error):
         app.logger.error(str(error))
+        app.logger.exception(error)
         result = {
             "code": 500,
-            "message": "Internal Error."
+            "message": str(error)
         }
         return jsonify(result), 500
 
-from . import price
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return not_found(404, 'not found')
+

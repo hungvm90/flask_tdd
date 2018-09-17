@@ -7,6 +7,8 @@ class Config:
     SSL_REDIRECT = False
     LOG_FOLDER = './'
     APP_VERSION = 'dev'
+    PRICE_ADJUST_SOURCE_URL = ''
+    STOCKBOOK_API = ''
     DATA_FILE = os.environ.get('DEFAULT') or \
         os.path.join(basedir, 'data_dev.dat')
 

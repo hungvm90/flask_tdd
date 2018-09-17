@@ -1,10 +1,8 @@
 import unittest
 import json
-import os
 from unittest.mock import patch, Mock
-import app
 from app import create_app
-from app.fuck import Simple
+from app.finfo import AdjustInfo
 
 
 class APITestCase(unittest.TestCase):
@@ -17,34 +15,35 @@ class APITestCase(unittest.TestCase):
     def tearDown(self):
         self.app_context.pop()
 
-    def delete_data_folder(self):
-        if os.path.exists(self.app.config.DATA_FILE):
-            os.remove(self.app.config.DATA_FILE)
+    @patch('app.trigger.rest.adjust_price_service')
+    def test_trigger_when_success_should_return_adjusted(self, mock_adjust_price_service):
+        adjusts = []
+        ad_acb = AdjustInfo("ACB", 0.98, "2018-09-14")
+        adjusts.append(ad_acb)
+        ad_vnd = AdjustInfo("VND", 0.88, "2018-09-14")
+        adjusts.append(ad_vnd)
+        mock_adjust_price_service.adjust_for_today = Mock()
+        mock_adjust_price_service.adjust_for_today.return_value = adjusts
+        response = self.client.post(
+            '/api/adjust/trigger',
+            headers={})
+        self.assertEqual(response.status_code, 200)
+        json_response = json.loads(response.get_data(as_text=True))
+        self.assertIsNotNone(json_response.get('adjusts'))
+        self.assertTrue(ad_acb.to_json() in json_response.get('adjusts'))
+        self.assertTrue(ad_vnd.to_json() in json_response.get('adjusts'))
+        mock_adjust_price_service.adjust_for_today.assert_called_once()
 
-    @patch.object(app.price.PriceAdjustSource, 'get_today_adjust', autospec=True, return_value=['xxxx'])
-    def test_trigger_when_data_file_is_not_exist(self, get_today_adjust_mock):
-        x = Simple()
-        print(x)
-        print(x.f())
-        # self.delete_data_folder()
-        # response = self.client.post(
-        #     '/api/adjust/trigger',
-        #     headers={})
-        # self.assertEqual(response.status_code, 200)
-        # json_response = json.loads(response.get_data(as_text=True))
-        # self.assertEqual(json_response['error'], 'not found')
-
-    @patch('app.price.PriceAdjustSource')
-    def test_trigger_when_data_file_is_not_exist_x(self, MockClass):
-        instance = MockClass.return_value
-        instance.get_today_adjust.return_value = ['a', 'b']
-        x = Simple()
-        print(x)
-        print(x.f())
-        # self.delete_data_folder()
-        # response = self.client.post(
-        #     '/api/adjust/trigger',
-        #     headers={})
-        # self.assertEqual(response.status_code, 200)
-        # json_response = json.loads(response.get_data(as_text=True))
-        # self.assertEqual(json_response['error'], 'not found')
+    @patch('app.trigger.rest.adjust_price_service')
+    def test_trigger_when_exception_should_return_adjusted(self, mock_adjust_price_service):
+        error_msg = "some thing happen"
+        mock_adjust_price_service.adjust_for_today = Mock()
+        mock_adjust_price_service.adjust_for_today.side_effect = RuntimeError(error_msg)
+        response = self.client.post(
+            '/api/adjust/trigger',
+            headers={})
+        self.assertEqual(response.status_code, 500)
+        json_response = json.loads(response.get_data(as_text=True))
+        self.assertEqual(json_response.get('code'), 500)
+        self.assertEqual(json_response.get('message'), error_msg)
+        mock_adjust_price_service.adjust_for_today.assert_called_once()
