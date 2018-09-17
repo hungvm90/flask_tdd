@@ -4,9 +4,9 @@ import datetime
 from app.finfo import PriceAdjustSource
 
 
-class AdjustPriceServiceTest(unittest.TestCase):
+class PriceAdjustSourceTest(unittest.TestCase):
     def setUp(self):
-        self._source = PriceAdjustSource('')
+        self._source = PriceAdjustSource('https://finfo-api.vndirect.com.vn/v3/stocks/adjustRatio')
 
     def tearDown(self):
         pass

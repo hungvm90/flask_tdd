@@ -60,7 +60,7 @@ class PriceAdjustSource(object):
         today = datetime.datetime.now().strftime('%Y-%m-%d')
         if self._cache.get(today) is not None:
             return self._cache.get(today)
-        res = requests.get("https://finfo-api.vndirect.com.vn/v3/stocks/adjustRatio?fromDate={}".format(today),
+        res = requests.get("{}?fromDate={}".format(self._url, today),
                            timeout=3)
         if res.ok:
             today_adjusts = []
