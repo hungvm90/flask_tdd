@@ -3,7 +3,7 @@ import requests
 import datetime
 
 
-class AdjustInfo(object):
+class AdjustInfo:
     def __init__(self, symbol, ratio, date):
         self._symbol = symbol
         self._ratio = ratio
@@ -75,4 +75,4 @@ class PriceAdjustSource(object):
             self._cache[today] = today_adjusts
             return today_adjusts
         else:
-            raise RuntimeError("error: " + res.content)
+            raise RuntimeError("error: " + res.text)
