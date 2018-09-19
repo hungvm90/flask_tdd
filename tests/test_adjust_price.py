@@ -1,5 +1,4 @@
 import unittest
-import json
 from unittest.mock import patch
 import app
 from app import create_app
@@ -33,8 +32,8 @@ class AdjustPriceServiceTest(unittest.TestCase):
         ad_vnd = AdjustInfo("VND", 0.88, "2018-09-14")
         adjusts.append(ad_vnd)
         get_today_adjust_mock.return_value = adjusts
-        adjust_price_mock.return_value = True
         get_logs_mock.return_value = []
+        adjust_price_mock.return_value = None
 
         adjusted = self.adjust_price_service.adjust_for_today()
 
@@ -74,14 +73,15 @@ class AdjustPriceServiceTest(unittest.TestCase):
         ad_vnd = AdjustInfo("VND", 0.88, "2018-09-14")
         adjusts.append(ad_vnd)
         get_today_adjust_mock.return_value = adjusts
-        adjust_price_mock.side_effect = [True, False]
+        adjust_price_mock.side_effect = [None, RuntimeError('')]
         get_logs_mock.return_value = []
 
-        adjusted = self.adjust_price_service.adjust_for_today()
+        # adjusted = self.adjust_price_service.adjust_for_today()
+        self.assertRaises(RuntimeError, self.adjust_price_service.adjust_for_today)
 
         # then
-        self.assertEqual(1, len(adjusted))
-        self.assertIn(ad_acb, adjusted)
+        # self.assertEqual(1, len(adjusted))
+        # self.assertIn(ad_acb, adjusted)
 
         get_today_adjust_mock.assert_called_once()
 
@@ -113,7 +113,7 @@ class AdjustPriceServiceTest(unittest.TestCase):
         ad_vnd = AdjustInfo("VND", 0.88, "2018-09-14")
         adjusts.append(ad_vnd)
         get_today_adjust_mock.return_value = adjusts
-        adjust_price_mock.return_value = True
+        adjust_price_mock.return_value = None
         get_logs_mock.return_value = [ad_acb]
 
         adjusted = self.adjust_price_service.adjust_for_today()
@@ -149,7 +149,7 @@ class AdjustPriceServiceTest(unittest.TestCase):
         ad_vnd = AdjustInfo("VND", 0.88, "2018-09-14")
         adjusts.append(ad_vnd)
         get_today_adjust_mock.side_effect = RuntimeError('')
-        adjust_price_mock.return_value = True
+        adjust_price_mock.return_value = None
         get_logs_mock.return_value = []
 
         self.assertRaises(RuntimeError, self.adjust_price_service.adjust_for_today)

@@ -12,10 +12,9 @@ class AdjustPriceService(object):
     def adjust_price_for_symbol(self, ad):
         adjusted_log = self._log.get_logs()
         if ad not in adjusted_log:
-            print(self._stockbook_api.adjust_price)
-            if self._stockbook_api.adjust_price(symbol=ad.symbol, ratio=ad.ratio):
-                self._log.log(adjust_price=ad)
-                return True
+            self._stockbook_api.adjust_price(symbol=ad.symbol, ratio=ad.ratio)
+            self._log.log(adjust_price=ad)
+            return True
         return False
 
     def adjust_for_today(self):
@@ -28,5 +27,5 @@ class AdjustPriceService(object):
 
     def init(self, app):
         self._source = PriceAdjustSource(app.config['PRICE_ADJUST_SOURCE_URL'])
-        self._stockbook_api = Api(app.config['STOCKBOOK_API'])
+        self._stockbook_api = Api(app.config['STOCKBOOK_API'], app.config['TOKEN'])
         self._log = AdjustLog(app.config['DATA_FILE'])

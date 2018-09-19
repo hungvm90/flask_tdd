@@ -9,6 +9,7 @@ class Config:
     APP_VERSION = 'dev'
     PRICE_ADJUST_SOURCE_URL = ''
     STOCKBOOK_API = ''
+    TOKEN = ''
     DATA_FILE = os.environ.get('DEFAULT') or \
         os.path.join(basedir, 'data_dev.dat')
 
@@ -20,7 +21,7 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     DATA_FILE = os.environ.get('DEFAULT') or \
-                os.path.join(basedir, 'data.dat')
+                os.path.join(basedir, 'data_dev.dat')
 
 
 class TestingConfig(Config):

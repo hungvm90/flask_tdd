@@ -11,6 +11,7 @@ class AdjustLogTest(unittest.TestCase):
         self._log = AdjustLog(self._file_path)
 
     def tearDown(self):
+        self.delete_log()
         pass
 
     def delete_log(self):
