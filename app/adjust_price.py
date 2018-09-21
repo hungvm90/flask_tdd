@@ -1,6 +1,7 @@
 from app.finfo import PriceAdjustSource
 from app.stockbook import Api
 from app.log import AdjustLog
+from flask import current_app
 
 
 class AdjustPriceService(object):
@@ -28,6 +29,7 @@ class AdjustPriceService(object):
         adjusted = []
         for ad in adjusts:
             if self.adjust_price_for_symbol(ad):
+                current_app.logger.info("adjusted for {}".format(ad.to_json()))
                 adjusted.append(ad)
         return adjusted
 

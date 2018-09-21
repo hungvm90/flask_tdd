@@ -1,6 +1,5 @@
 Flask==1.0.2
 Flask-Cors==3.0.3
-Flask-Redis==0.3.0
 Flask-Script==2.0.6
 requests==2.18.4
 gunicorn==19.8.1

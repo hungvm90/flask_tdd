@@ -2,7 +2,6 @@ from flask import Flask, jsonify, current_app
 from flask.logging import default_handler
 from flask_cors import CORS
 import logging
-import json
 from logging import handlers
 from config import config
 from .util import make_log_dir
