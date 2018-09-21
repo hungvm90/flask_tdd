@@ -5,4 +5,4 @@ export FLASK_APP=price_adjust.py
 -- flask test
 
 Run:
-    gunicorn -w 4 -b :9090 stock_info:app
+    gunicorn -w 4 -b :9090 price_adjust:app

@@ -1,4 +1,6 @@
 import os
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -26,12 +28,19 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
+    APP_VERSION = 'test'
     WTF_CSRF_ENABLED = False
     DATA_FILE = os.environ.get('DEFAULT') or \
                 os.path.join(basedir, 'data_test.dat')
 
 
 class ProductionConfig(Config):
+    LOG_FOLDER = os.getenv("LOG_FOLDER") or './'
+    APP_VERSION = os.getenv("APP_VERSION") or 'dev'
+    PRICE_ADJUST_SOURCE_URL = os.getenv("PRICE_ADJUST_SOURCE_URL")
+    STOCKBOOK_API = os.getenv("STOCKBOOK_API")
+    TOKEN = os.getenv("TOKEN")
+    DATA_FILE = os.getenv("DATA_FILE")
 
     @classmethod
     def init_app(cls, app):

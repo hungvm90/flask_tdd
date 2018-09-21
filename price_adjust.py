@@ -15,7 +15,7 @@ import sys
 import click
 from app import create_app
 
-app = create_app(os.getenv('INSTAGRAM_DL_CONFIG') or 'default')
+app = create_app(os.getenv('PRICE_ADJUST') or 'default')
 
 
 @app.cli.command()

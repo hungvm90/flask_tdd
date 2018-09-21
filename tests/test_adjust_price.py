@@ -32,7 +32,7 @@ class AdjustPriceServiceTest(unittest.TestCase):
         ad_vnd = AdjustInfo("VND", 0.88, "2018-09-14")
         adjusts.append(ad_vnd)
         get_today_adjust_mock.return_value = adjusts
-        get_logs_mock.return_value = []
+        get_logs_mock.side_effect = RuntimeError()
         adjust_price_mock.return_value = None
 
         adjusted = self.adjust_price_service.adjust_for_today()
@@ -74,14 +74,9 @@ class AdjustPriceServiceTest(unittest.TestCase):
         adjusts.append(ad_vnd)
         get_today_adjust_mock.return_value = adjusts
         adjust_price_mock.side_effect = [None, RuntimeError('')]
-        get_logs_mock.return_value = []
+        get_logs_mock.side_effect = RuntimeError()
 
-        # adjusted = self.adjust_price_service.adjust_for_today()
         self.assertRaises(RuntimeError, self.adjust_price_service.adjust_for_today)
-
-        # then
-        # self.assertEqual(1, len(adjusted))
-        # self.assertIn(ad_acb, adjusted)
 
         get_today_adjust_mock.assert_called_once()
 
@@ -172,3 +167,18 @@ class AdjustPriceServiceTest(unittest.TestCase):
         get_logs_mock.return_value = []
 
         self.assertRaises(RuntimeError, self.adjust_price_service.adjust_for_today)
+
+    def test_adjust_info_str(self):
+        ad_acb = AdjustInfo("ACB", 0.98, "2018-09-14")
+        s = str(ad_acb)
+        self.assertEqual('{"symbol": "ACB", "ratio": 0.98, "date": "2018-09-14"}', s)
+
+    def test_adjust_info_repr(self):
+        ad_acb = AdjustInfo("ACB", 0.98, "2018-09-14")
+        s = "{}".format(ad_acb)
+        self.assertEqual('{"symbol": "ACB", "ratio": 0.98, "date": "2018-09-14"}', s)
+
+    def test_adjust_info_to_json(self):
+        ad_acb = AdjustInfo("ACB", 0.98, "2018-09-14")
+        _json = ad_acb.to_json()
+        self.assertEqual({"symbol": "ACB", "ratio": 0.98, "date": "2018-09-14"}, _json)
