@@ -5,4 +5,4 @@ export FLASK_APP=price_adjust.py
 -- flask test
 
 Run:
-    gunicorn -w 4 -b :9090 price_adjust:app
+    gunicorn -w 1 -b :6600 price_adjust:app --access-logfile out.log

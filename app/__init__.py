@@ -23,7 +23,7 @@ def init_logger(app, config_obj):
     file_handler = handlers.WatchedFileHandler(
         '{}/adjustPriceForRecommendation.log'.format(config_obj.LOG_FOLDER)
     )
-    file_handler.setLevel(logging.WARN)
+    file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
     app.logger.addHandler(file_handler)
 
