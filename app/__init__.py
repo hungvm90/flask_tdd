@@ -3,6 +3,7 @@ from flask.logging import default_handler
 from flask_cors import CORS
 import logging
 from logging import handlers
+import pymsteams
 from config import config
 from .util import make_log_dir
 from . import finfo
@@ -49,12 +50,15 @@ def create_app(config_name):
     config_obj.init_app(app)
     setup_default_app_error_handler(app)
     cors.init_app(app)
+    teams = pymsteams.connectorcard(config_obj.TEAMS_HOOK)
+    app.teams = teams
 
     from .trigger import price_blueprint
     app.register_blueprint(price_blueprint, url_prefix='/api/adjust')
     app.logger.info("start app with {}".format(config_obj.PRICE_ADJUST_SOURCE_URL))
     app.logger.info("start app with {}".format(config_obj.STOCKBOOK_API))
     app.logger.info("start app with {}".format(config_obj.DATA_FILE))
+    app.logger.info("start app with {}".format(config_obj.TEAMS_HOOK))
     return app
 
 
