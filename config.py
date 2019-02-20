@@ -15,6 +15,7 @@ class Config:
     DATA_FILE = os.environ.get('DEFAULT') or \
         os.path.join(basedir, 'data_dev.dat')
     TEAMS_HOOK = ""
+    SENTRY = ""
 
     @staticmethod
     def init_app(app):
@@ -43,6 +44,7 @@ class ProductionConfig(Config):
     TOKEN = os.getenv("TOKEN")
     DATA_FILE = os.getenv("DATA_FILE")
     TEAMS_HOOK = os.getenv("TEAMS_HOOK")
+    SENTRY = os.getenv("SENTRY")
 
     @classmethod
     def init_app(cls, app):

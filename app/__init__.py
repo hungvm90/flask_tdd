@@ -3,7 +3,8 @@ from flask.logging import default_handler
 from flask_cors import CORS
 import logging
 from logging import handlers
-import pymsteams
+import sentry_sdk
+from sentry_sdk import capture_exception
 from config import config
 from .util import make_log_dir
 from . import finfo
@@ -50,8 +51,7 @@ def create_app(config_name):
     config_obj.init_app(app)
     setup_default_app_error_handler(app)
     cors.init_app(app)
-    teams = pymsteams.connectorcard(config_obj.TEAMS_HOOK)
-    app.teams = teams
+    sentry_sdk.init(config_obj.SENTRY)
 
     from .trigger import price_blueprint
     app.register_blueprint(price_blueprint, url_prefix='/api/adjust')
@@ -96,6 +96,7 @@ def setup_default_app_error_handler(app):
 
     @app.errorhandler(Exception)
     def error_handle(error):
+        capture_exception(error)
         app.logger.error(str(error))
         app.logger.exception(error)
         return internal_error(str(error), 500)
