@@ -59,6 +59,7 @@ def create_app(config_name):
     app.logger.info("start app with {}".format(config_obj.STOCKBOOK_API))
     app.logger.info("start app with {}".format(config_obj.DATA_FILE))
     app.logger.info("start app with {}".format(config_obj.TEAMS_HOOK))
+    app.sentry = sentry_sdk
     return app
 
 

@@ -61,7 +61,7 @@ class PriceAdjustSource(object):
         if self._cache.get(today) is not None:
             return self._cache.get(today)
         res = requests.get("{}?fromDate={}".format(self._url, today),
-                           timeout=3)
+                           timeout=30)
         if res.ok:
             today_adjusts = []
             data = res.json()
